@@ -1,0 +1,32 @@
+{% load static %}
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% block title %}DenTech · Your care, connected{% endblock %}</title>
+<link rel="stylesheet" href="{% static 'clinic.css' %}"><link rel="stylesheet" href="{% static 'calendar.css' %}"><script src="{% static 'clinic.js' %}" defer></script></head>
+<body class="{% if user.is_authenticated %}workspace{% endif %}">
+<a class="skip" href="#main">Skip to content</a>
+{% if user.is_authenticated %}
+<aside class="sidebar"><a class="brand" href="{% url 'dashboard' %}"><span class="brand-icon">D<span>+</span></span>DenTech<span class="brand-dot">.</span></a>
+<p class="nav-caption">{% if is_clinic_staff %}CLINIC WORKSPACE{% else %}PATIENT PORTAL{% endif %}</p>
+<nav aria-label="Main navigation">
+<a href="{% url 'dashboard' %}" data-nav="dashboard">◫ <span>Overview</span></a>
+{% if is_clinic_staff %}<a href="{% url 'patients' %}" data-nav="patients">♧ <span>Patients</span></a>{% endif %}
+<a href="{% url 'appointments' %}" data-nav="appointments">▦ <span>Appointments</span></a>
+{% if not is_clinic_staff or has_clinical_access %}
+<a href="{% url 'visits' %}" data-nav="visits">▤ <span>Visit history</span></a>
+<a href="{% url 'plans' %}" data-nav="plans">◇ <span>Treatment plans</span></a>
+<a href="{% url 'documents' %}" data-nav="documents">▧ <span>Documents</span></a>{% endif %}
+<a href="{% url 'billing' %}" data-nav="billing">▣ <span>Billing & payments</span></a>
+{% if user.is_superuser or user.role == 'admin' %}<a href="{% url 'reports' %}" data-nav="reports">▥ <span>Reports & activity</span></a><a href="{% url 'clinic_settings' %}" data-nav="settings">⚙ <span>Clinic settings</span></a>{% endif %}
+{% if user.is_staff %}<a href="/admin/">⚙ <span>Administration</span></a>{% endif %}
+<a href="{% url 'profile' %}" data-nav="profile">○ <span>My account</span></a></nav>
+<div class="sidebar-bottom"><div class="avatar">{{ user.first_name|first|default:user.username|first|upper }}</div><div><strong>{{ user.get_full_name|default:user.username }}</strong><small>{{ user.get_role_display }}</small></div><form method="post" action="{% url 'logout' %}">{% csrf_token %}<button class="icon-button" aria-label="Sign out" title="Sign out">↪</button></form></div></aside>
+<div class="app-main"><header class="app-header"><span class="muted">Your care, connected.</span><span class="header-pill"><i></i> {% if is_clinic_staff %}Clinic workspace{% else %}Patient portal{% endif %}</span></header>
+{% else %}
+<header class="public-header"><a class="brand" href="{% url 'home' %}"><span class="brand-icon">D<span>+</span></span>DenTech<span class="brand-dot">.</span></a><nav aria-label="Public navigation"><a href="{% url 'public_page' 'services' %}">Services</a><a href="{% url 'public_page' 'about' %}">About us</a><a href="{% url 'public_page' 'contact' %}">Contact</a><a class="button small" href="{% url 'login' %}">Patient & staff login ↗</a></nav></header>
+{% endif %}
+<main id="main" class="{% block main_class %}content{% endblock %}">
+{% for message in messages %}<div role="status" class="notice {{ message.tags }}">{{ message }}</div>{% endfor %}
+{% block content %}{% endblock %}</main>
+{% if user.is_authenticated %}<footer class="app-footer">DenTech <span>Thoughtful care. One connected record.</span></footer></div>{% else %}<footer class="public-footer"><a class="brand" href="{% url 'home' %}">DenTech.</a><span>Your care, connected.</span><small>Patient information is available only after secure sign-in.</small></footer>{% endif %}
+</body></html>

@@ -1,0 +1,1 @@
+{% extends 'auth/layout.html' %}{% block auth_content %}<p class="eyebrow">ACCOUNT RECOVERY</p><h2>Forgot your password?</h2><p>Enter your verified account email to request a reset link.</p><form method="post">{% csrf_token %}{{ form.as_p }}<button class="button full">Send reset link</button></form>{% endblock %}

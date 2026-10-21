@@ -1,0 +1,1 @@
+{% extends 'auth/layout.html' %}{% block auth_content %}<p class="eyebrow">STEP 2 OF 3 · CREATE ACCOUNT</p><h2>Make yourself at home.</h2><p class="muted">Choose your login details. We’ll email you a link to verify your address.</p><form method="post">{% csrf_token %}{{ form.as_p }}<button class="button full">Create account & send email →</button></form>{% endblock %}
