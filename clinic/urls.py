@@ -2,6 +2,7 @@ from django.contrib.auth import views as auth
 from django.urls import path
 from . import views
 from .auth_views import LimitedPasswordResetView
+from . import imaging_views
 
 urlpatterns = [
     path('', views.home, name='home'),
@@ -30,8 +31,14 @@ urlpatterns = [
     path('appointments/<int:pk>/manage/', views.appointment_update, name='appointment_update'),
     path('appointments/<int:pk>/cancel/', views.appointment_cancel, name='appointment_cancel'),
     path('visits/', views.visits, name='visits'), path('visits/<int:pk>/', views.visit_detail, name='visit_detail'),
-    path('visits/<int:pk>/upload/', views.document_upload, name='document_upload'),
-    path('documents/', views.documents, name='documents'), path('documents/<int:pk>/', views.document_download, name='document_download'),
+    path('visits/<int:pk>/upload/', imaging_views.upload, name='document_upload'),
+    path('documents/', imaging_views.documents, name='documents'),
+    path('documents/upload/', imaging_views.upload, name='imaging_upload'),
+    path('documents/<int:pk>/view/', imaging_views.viewer, name='document_view'),
+    path('documents/<int:pk>/edit/', imaging_views.edit, name='document_edit'),
+    path('documents/<int:pk>/retry/', imaging_views.retry, name='document_retry'),
+    path('documents/<int:pk>/data/<str:asset>/', imaging_views.data, name='document_data'),
+    path('documents/<int:pk>/', views.document_download, name='document_download'),
     path('plans/', views.plans, name='plans'), path('billing/', views.billing, name='billing'),
     path('billing/<int:pk>/', views.receipt, name='receipt'), path('billing/<int:pk>/payment/', views.payment_create, name='payment_create'),
     path('profile/', views.profile, name='profile'), path('reports/', views.reports, name='reports'),

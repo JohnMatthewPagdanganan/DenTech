@@ -59,7 +59,7 @@ def serve():
     waitress_serve(application, host='127.0.0.1', port=8011, threads=4,
         trusted_proxy='127.0.0.1', trusted_proxy_count=1,
         trusted_proxy_headers={'x-forwarded-proto', 'x-forwarded-for'},
-        clear_untrusted_proxy_headers=True, max_request_body_size=12 * 1024 * 1024)
+        clear_untrusted_proxy_headers=True, max_request_body_size=100 * 1024 * 1024)
 
 
 def start(cloudflared):
@@ -98,6 +98,7 @@ def start(cloudflared):
             env=setup_env, capture_output=True, text=True, check=True)
         if 'One-time generated demo password' in seeded.stdout:
             (DEMO / 'access.txt').write_text(seeded.stdout)
+        subprocess.run([sys.executable, str(ROOT / 'manage.py'), 'seed_demo_imaging', '--download-sample'], cwd=ROOT, env=setup_env, check=True)
         server_log = DEMO / 'server.log'
         server = start_background([sys.executable, '-u', str(Path(__file__).resolve()), '_serve'],
             environment(url, secret), server_log)

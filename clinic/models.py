@@ -129,6 +129,10 @@ class ToothRecord(models.Model):
     condition = models.CharField(max_length=20, choices=[('healthy', 'Healthy'), ('decay', 'Decay'),
         ('filled', 'Filled'), ('missing', 'Missing'), ('crown', 'Crown'), ('treatment', 'Needs treatment')])
     notes = models.CharField(max_length=250, blank=True)
+    patient_notes = models.CharField(max_length=250, blank=True,
+        help_text='Only these notes can appear in the patient’s interactive chart. Internal notes stay private.')
+    released = models.BooleanField(default=False,
+        help_text='Share this tooth condition and its patient-facing notes in the patient’s current 3D chart.')
     updated_by = models.ForeignKey(User, on_delete=models.PROTECT)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -155,8 +159,21 @@ class Document(models.Model):
     visit = models.ForeignKey(Visit, on_delete=models.PROTECT, related_name='documents')
     title = models.CharField(max_length=150)
     file = models.FileField(upload_to=private_upload,
-        validators=[FileExtensionValidator(['pdf', 'png', 'jpg', 'jpeg'])])
+        validators=[FileExtensionValidator(['pdf', 'png', 'jpg', 'jpeg', 'zip', 'dcm'])])
     released = models.BooleanField(default=False)
+    kind = models.CharField(max_length=10, choices=[('auto', 'Document'), ('image', '2D image'),
+        ('pdf', 'PDF report'), ('cbct', '3D DICOM scan')], default='auto')
+    state = models.CharField(max_length=12, choices=[('processing', 'Preparing preview'),
+        ('ready', 'Ready'), ('failed', 'Unable to prepare')], default='ready')
+    metadata = models.JSONField(default=dict, blank=True)
+    volume = models.FileField(upload_to=private_upload, blank=True)
+    error_message = models.CharField(max_length=300, blank=True)
+
+    @property
+    def viewer_kind(self):
+        if self.kind != 'auto':
+            return self.kind
+        return 'pdf' if Path(self.file.name).suffix.lower() == '.pdf' else 'image'
 
 
 class Invoice(models.Model):

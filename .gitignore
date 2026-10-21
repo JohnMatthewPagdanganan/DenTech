@@ -9,3 +9,8 @@ private-media/
 staticfiles/
 .coverage
 .public-demo/
+
+node_modules/
+
+# Downloaded public teaching fixtures (install with seed_demo_imaging)
+.demo-assets/

@@ -126,7 +126,9 @@ class VisitForm(forms.ModelForm):
 class ToothForm(forms.ModelForm):
     class Meta:
         model = ToothRecord
-        fields = ['number', 'condition', 'notes']
+        fields = ['number', 'condition', 'notes', 'patient_notes', 'released']
+        labels = {'notes': 'Internal notes', 'patient_notes': 'Notes visible to patient',
+                  'released': 'Share this tooth condition with the patient'}
 
     def clean_number(self):
         number = self.cleaned_data['number']
@@ -148,14 +150,50 @@ class DocumentForm(forms.ModelForm):
         fields = ['title', 'file', 'released']
 
     def clean_file(self):
-        file = self.cleaned_data['file']
-        if file.size > 10 * 1024 * 1024:
-            raise ValidationError('Files must be 10 MB or smaller.')
-        head = file.read(8)
-        file.seek(0)
-        if not (head.startswith(b'%PDF-') or head.startswith(b'\x89PNG\r\n\x1a\n') or head.startswith(b'\xff\xd8\xff')):
-            raise ValidationError('Upload a valid PDF, PNG, or JPEG file.')
-        return file
+        from .imaging import validate_upload
+        return validate_upload(self.cleaned_data['file'])
+
+
+class MultipleFileInput(forms.ClearableFileInput):
+    allow_multiple_selected = True
+
+
+class ImagingFilesField(forms.FileField):
+    widget = MultipleFileInput
+
+    def clean(self, data, initial=None):
+        from .imaging import validate_upload
+        files = data if isinstance(data, (list, tuple)) else [data]
+        if len(files) > 12:
+            raise ValidationError('Upload up to 12 attachments at a time. Put a DICOM series in one ZIP.')
+        return [validate_upload(super(ImagingFilesField, self).clean(file, initial)) for file in files]
+
+
+class VisitChoiceField(forms.ModelChoiceField):
+    def label_from_instance(self, visit):
+        return f'{visit.patient} · {visit.date} · {visit.title}'
+
+
+class ImagingUploadForm(forms.Form):
+    visit = VisitChoiceField(Visit.objects.select_related('patient').all())
+    title = forms.CharField(max_length=120, help_text='For multiple files, a number is added to each title.')
+    files = ImagingFilesField(label='Documents or imaging files', help_text=
+        'PDF, PNG or JPEG: up to 10 MB each. DICOM series ZIP or multi-frame DCM: up to 96 MB. '
+        'Use one complete CT/CBCT series per ZIP, not screenshots or unrelated X-rays.')
+    released = forms.BooleanField(required=False, label='Visible to patient', help_text=
+        'The parent visit must also be released. Leave unchecked until reviewed.')
+
+    def __init__(self, *args, visit=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        if visit is not None:
+            self.fields.pop('visit')
+
+
+class DocumentReleaseForm(forms.ModelForm):
+    class Meta:
+        model = Document
+        fields = ['title', 'released']
+        labels = {'released': 'Visible to patient'}
 
 
 class InvoiceForm(forms.ModelForm):

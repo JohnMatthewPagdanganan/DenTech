@@ -79,3 +79,6 @@ if not DEBUG:
     SECURE_HSTS_SECONDS = 31536000
     SECURE_HSTS_INCLUDE_SUBDOMAINS = True
     SECURE_HSTS_PRELOAD = True
+
+# Bound multipart document batches; large scan files spool to private temporary storage.
+DATA_UPLOAD_MAX_NUMBER_FILES = 12

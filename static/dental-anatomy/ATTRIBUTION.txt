@@ -1,0 +1,11 @@
+BodyParts3D, © The Database Center for Life Science licensed under CC Attribution 4.0 International.
+Official license: https://dbarchive.biosciencedbc.jp/en/bodyparts3d/lic.html
+License text: https://creativecommons.org/licenses/by/4.0/
+Official dataset: https://dbarchive.biosciencedbc.jp/en/bodyparts3d/download.html
+Publication: Mitsuhashi et al. (2009), https://doi.org/10.1093/nar/gkn613
+
+Geometry obtained from OMF Atlas high-resolution BodyParts3D 4.0 assets:
+https://github.com/choxos/OMFAtlas/tree/c835665a9ade09ee0b993cee6eee1b25b7f7311b/public/models/high-resolution
+Upstream processing: official 99% reduction OBJ archive converted from millimeters/Z-up to meters/Y-up and packed with signed 16-bit normals. DenTech selected 31 meshes (mandible, upper and lower gingiva, 28 permanent teeth) and concatenated their unchanged geometry bytes. Viewer applies uniform scaling, recentering, display materials, tooth condition tinting, a small lower-jaw opening, and upper-tooth root clipping above the gum line for the dental presentation. No anatomy from other datasets is included.
+Source attribution: https://github.com/choxos/OMFAtlas/blob/c835665a9ade09ee0b993cee6eee1b25b7f7311b/public/ATTRIBUTION.md
+This reference anatomy is not the patient's anatomy. Primary teeth and third molars are not supplied by this reference; their chart entries remain accessible by number without fabricated 3D anatomy.

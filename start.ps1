@@ -7,5 +7,7 @@ if (-not (Test-Path -LiteralPath $clinicPython)) {
 }
 & $clinicPython manage.py migrate --noinput
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+& $clinicPython manage.py seed_demo_imaging --download-sample
+if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 Write-Host 'DenTech: http://127.0.0.1:8000. Press Ctrl+C to stop.'
 & $clinicPython manage.py runserver 127.0.0.1:8000

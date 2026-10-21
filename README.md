@@ -44,7 +44,7 @@ Codes expire after 48 hours, are stored as password hashes, stop accepting attem
 - Appointment requests, dentist assignment, confirmation, rescheduling, completion, and cancellation.
 - Exact-time confirmed dentist booking conflict prevention. Appointment duration, overlapping intervals, clinic availability, holiday calendars, and reminders are **not yet modeled**; staff must check these before confirmation.
 - Dentist visit records, private staff notes, release controls, permanent/primary FDI dental charts.
-- Treatment plans and restricted PDF/PNG/JPEG attachments, up to 10 MB each.
+- Treatment plans and private multi-file documents: PDF/PNG/JPEG (10 MB each), plus compatible DICOM series ZIP/multi-frame DCM scans (96 MiB).
 - Patient-owned released visits, plans, and documents. Reception cannot access clinical notes or attachments.
 - Invoices, partial payments, balances, payment history, printable receipts. Overpayments and negative payments are rejected.
 - Administrator totals, activity log, clinic settings, staff/service administration.
@@ -87,3 +87,7 @@ This is a working first version for local review, not a configured live clinic d
 - Do not deploy demo accounts or the development database. Billing summaries are not configured as official tax receipts. Online payment processing, clinical e-signatures, inventory, SMS, account email changes, and guardian accounts are outside this version.
 
 No credentials or patient databases are tracked in Git. This project does not automatically commit, push, or deploy changes.
+
+## Documents and imaging
+
+Documents now includes a 2D image/PDF viewer and a 2D/3D switch for compatible CT/CBCT scans. Dentists and administrators upload files to a visit and control patient visibility. See IMAGING.md for supported scan exports, limits, privacy, and build instructions.

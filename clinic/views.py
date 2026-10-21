@@ -333,7 +333,9 @@ def clinical_form(request, pk, kind, item_id=None):
             item.dentist = request.user
         if kind == 'tooth':
             ToothRecord.objects.update_or_create(patient=patient, number=form.cleaned_data['number'], defaults={
-                'condition': form.cleaned_data['condition'], 'notes': form.cleaned_data['notes'], 'updated_by': request.user})
+                'condition': form.cleaned_data['condition'], 'notes': form.cleaned_data['notes'],
+                'patient_notes': form.cleaned_data['patient_notes'], 'released': form.cleaned_data['released'],
+                'updated_by': request.user})
         else:
             item.save()
         audit(request.user, 'Updated ' + kind, patient.pid)
